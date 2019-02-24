@@ -14,6 +14,7 @@ var ReasonReact = require("reason-react/src/ReasonReact.js");
 var Js_primitive = require("bs-platform/lib/js/js_primitive.js");
 var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Demo$ReasonReactExample = require("../animation/Demo.bs.js");
+var Hooks$ReasonReactExample = require("../hooks/Hooks.bs.js");
 var Spring$ReasonReactExample = require("../animation/Spring.bs.js");
 var Animation$ReasonReactExample = require("../animation/Animation.bs.js");
 var RemoteAction$ReasonReactExample = require("../animation/RemoteAction.bs.js");
@@ -904,64 +905,70 @@ function make$6(Props) {
   var chatHeads = Belt_Array.makeBy(6, (function (i) {
           return ReasonReact.element(gen(/* () */0), undefined, make$5(Caml_array.caml_array_get(controls, i)[/* rAction */0], i, imageGallery, /* array */[]));
         }));
-  var match = React.useReducer((function (state, _) {
-          return state;
-        }), /* record */[
-        /* controls */controls,
-        /* chatHeads */chatHeads
-      ]);
-  var match$1 = match[0];
-  var controls$1 = match$1[/* controls */0];
-  React.useEffect((function () {
-          Belt_Array.forEachWithIndex(controls$1, (function (i, _) {
-                  var headNum = i;
-                  var setOnChange = function (isX, afterChange) {
-                    var control = Caml_array.caml_array_get(controls$1, headNum);
-                    var arg = function (v) {
-                      RemoteAction$ReasonReactExample.send(control[/* rAction */0], isX ? /* MoveX */Block.__(0, [v]) : /* MoveY */Block.__(1, [v]));
-                      return Curry._1(afterChange, v);
-                    };
-                    var arg$1 = function (param, param$1) {
-                      return Curry._5(SpringAnimation$ReasonReactExample.setOnChange, Spring$ReasonReactExample.gentle, 2, param, param$1, arg);
-                    };
-                    return (function (eta) {
-                                return Curry._2(arg$1(undefined, undefined), undefined, eta);
-                              })(isX ? control[/* animX */1] : control[/* animY */2]);
-                  };
-                  var isLastHead = headNum === 5;
-                  var afterChangeX = function (x) {
-                    if (isLastHead) {
-                      return /* () */0;
-                    } else {
-                      return SpringAnimation$ReasonReactExample.setFinalValue(x, Caml_array.caml_array_get(controls$1, headNum + 1 | 0)[/* animX */1]);
-                    }
-                  };
-                  var afterChangeY = function (y) {
-                    if (isLastHead) {
-                      return /* () */0;
-                    } else {
-                      return SpringAnimation$ReasonReactExample.setFinalValue(y, Caml_array.caml_array_get(controls$1, headNum + 1 | 0)[/* animY */2]);
-                    }
-                  };
-                  setOnChange(true, afterChangeX);
-                  return setOnChange(false, afterChangeY);
-                }));
-          var onMove = function (e) {
-            var x = e.pageX;
-            var y = e.pageY;
-            SpringAnimation$ReasonReactExample.setFinalValue(x, Caml_array.caml_array_get(controls$1, 0)[/* animX */1]);
-            return SpringAnimation$ReasonReactExample.setFinalValue(y, Caml_array.caml_array_get(controls$1, 0)[/* animY */2]);
-          };
-          window.addEventListener("mousemove", onMove);
-          window.addEventListener("touchmove", onMove);
-          return (function () {
-                    return Belt_Array.forEach(controls$1, (function (param) {
-                                  SpringAnimation$ReasonReactExample.stop(param[/* animX */1]);
-                                  return SpringAnimation$ReasonReactExample.stop(param[/* animY */2]);
-                                }));
-                  });
-        }), ([]));
-  return React.createElement("div", undefined, match$1[/* chatHeads */1]);
+  var partial_arg = /* record */[
+    /* controls */controls,
+    /* chatHeads */chatHeads
+  ];
+  return Hooks$ReasonReactExample.Hook[/* let_ */0]((function (param) {
+                return Hooks$ReasonReactExample.useState(partial_arg, param);
+              }), (function (param) {
+                var match = param[0];
+                var chatHeads = match[/* chatHeads */1];
+                var controls = match[/* controls */0];
+                return Hooks$ReasonReactExample.Hook[/* let_ */0]((function (param) {
+                              return Hooks$ReasonReactExample.useEffect0((function () {
+                                            Belt_Array.forEachWithIndex(controls, (function (i, _) {
+                                                    var headNum = i;
+                                                    var setOnChange = function (isX, afterChange) {
+                                                      var control = Caml_array.caml_array_get(controls, headNum);
+                                                      var arg = function (v) {
+                                                        RemoteAction$ReasonReactExample.send(control[/* rAction */0], isX ? /* MoveX */Block.__(0, [v]) : /* MoveY */Block.__(1, [v]));
+                                                        return Curry._1(afterChange, v);
+                                                      };
+                                                      var arg$1 = function (param, param$1) {
+                                                        return Curry._5(SpringAnimation$ReasonReactExample.setOnChange, Spring$ReasonReactExample.gentle, 2, param, param$1, arg);
+                                                      };
+                                                      return (function (eta) {
+                                                                  return Curry._2(arg$1(undefined, undefined), undefined, eta);
+                                                                })(isX ? control[/* animX */1] : control[/* animY */2]);
+                                                    };
+                                                    var isLastHead = headNum === 5;
+                                                    var afterChangeX = function (x) {
+                                                      if (isLastHead) {
+                                                        return /* () */0;
+                                                      } else {
+                                                        return SpringAnimation$ReasonReactExample.setFinalValue(x, Caml_array.caml_array_get(controls, headNum + 1 | 0)[/* animX */1]);
+                                                      }
+                                                    };
+                                                    var afterChangeY = function (y) {
+                                                      if (isLastHead) {
+                                                        return /* () */0;
+                                                      } else {
+                                                        return SpringAnimation$ReasonReactExample.setFinalValue(y, Caml_array.caml_array_get(controls, headNum + 1 | 0)[/* animY */2]);
+                                                      }
+                                                    };
+                                                    setOnChange(true, afterChangeX);
+                                                    return setOnChange(false, afterChangeY);
+                                                  }));
+                                            var onMove = function (e) {
+                                              var x = e.pageX;
+                                              var y = e.pageY;
+                                              SpringAnimation$ReasonReactExample.setFinalValue(x, Caml_array.caml_array_get(controls, 0)[/* animX */1]);
+                                              return SpringAnimation$ReasonReactExample.setFinalValue(y, Caml_array.caml_array_get(controls, 0)[/* animY */2]);
+                                            };
+                                            window.addEventListener("mousemove", onMove);
+                                            window.addEventListener("touchmove", onMove);
+                                            return (function () {
+                                                      return Belt_Array.forEach(controls, (function (param) {
+                                                                    SpringAnimation$ReasonReactExample.stop(param[/* animX */1]);
+                                                                    return SpringAnimation$ReasonReactExample.stop(param[/* animY */2]);
+                                                                  }));
+                                                    });
+                                          }), param);
+                            }), (function () {
+                              return React.createElement("div", undefined, chatHeads);
+                            }));
+              }));
 }
 
 var ChatHeadsExample = /* module */[
@@ -969,6 +976,18 @@ var ChatHeadsExample = /* module */[
   /* createControl */createControl,
   /* make */make$6
 ];
+
+function chatHeads() {
+  return make$6({
+              imageGallery: false
+            });
+}
+
+function imageGalleryChatHeads() {
+  return make$6({
+              imageGallery: true
+            });
+}
 
 var component$6 = ReasonReact.reducerComponent("ChatHeadsExampleStarter");
 
@@ -997,13 +1016,9 @@ function make$7() {
                                       })
                                   }, "Start image gallery chatheads"));
                 case 1 : 
-                    return React.createElement(make$6, {
-                                imageGallery: false
-                              });
+                    return React.createElement(chatHeads, /* () */0);
                 case 2 : 
-                    return React.createElement(make$6, {
-                                imageGallery: true
-                              });
+                    return React.createElement(imageGalleryChatHeads, /* () */0);
                 
               }
             }),
@@ -1186,6 +1201,8 @@ exports.AnimateHeight = AnimateHeight;
 exports.ReducerAnimationExample = ReducerAnimationExample;
 exports.ChatHead = ChatHead;
 exports.ChatHeadsExample = ChatHeadsExample;
+exports.chatHeads = chatHeads;
+exports.imageGalleryChatHeads = imageGalleryChatHeads;
 exports.ChatHeadsExampleStarter = ChatHeadsExampleStarter;
 exports.GalleryItem = GalleryItem;
 exports.GalleryContainer = GalleryContainer;

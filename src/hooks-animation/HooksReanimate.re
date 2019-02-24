@@ -711,9 +711,9 @@ module ChatHeadsExample = {
 
   [@react.component]
   let make = (~imageGallery, _) => {
-    let ({chatHeads, controls}, _send) =
-      React.useReducer(
-        (state, _action) => state,
+    open Hooks;
+    let%Hook ({chatHeads, controls}, _send) =
+      useState(
         {
           let controls = Belt.Array.makeBy(numHeads, _ => createControl());
           let chatHeads =
@@ -730,61 +730,70 @@ module ChatHeadsExample = {
         },
       );
 
-    React.useEffect0(() => {
-      let setupAnimation = headNum => {
-        let setOnChange = (~isX, afterChange) => {
-          let control = controls[headNum];
-          let animation = isX ? control.animX : control.animY;
-          animation
-          |> SpringAnimation.setOnChange(
-               ~preset=Spring.gentle,
-               ~speedup=2.,
-               ~onChange=v => {
-                 RemoteAction.send(
-                   control.rAction,
-                   ~action=isX ? MoveX(v) : MoveY(v),
-                 );
-                 afterChange(v);
-               },
-             );
+    let%Hook () =
+      useEffect0(() => {
+        let setupAnimation = headNum => {
+          let setOnChange = (~isX, afterChange) => {
+            let control = controls[headNum];
+            let animation = isX ? control.animX : control.animY;
+            animation
+            |> SpringAnimation.setOnChange(
+                 ~preset=Spring.gentle,
+                 ~speedup=2.,
+                 ~onChange=v => {
+                   RemoteAction.send(
+                     control.rAction,
+                     ~action=isX ? MoveX(v) : MoveY(v),
+                   );
+                   afterChange(v);
+                 },
+               );
+          };
+          let isLastHead = headNum == numHeads - 1;
+          let afterChangeX = x =>
+            isLastHead ?
+              () :
+              controls[headNum + 1].animX |> SpringAnimation.setFinalValue(x);
+          let afterChangeY = y =>
+            isLastHead ?
+              () :
+              controls[headNum + 1].animY |> SpringAnimation.setFinalValue(y);
+          setOnChange(~isX=true, afterChangeX);
+          setOnChange(~isX=false, afterChangeY);
         };
-        let isLastHead = headNum == numHeads - 1;
-        let afterChangeX = x =>
-          isLastHead ?
-            () :
-            controls[headNum + 1].animX |> SpringAnimation.setFinalValue(x);
-        let afterChangeY = y =>
-          isLastHead ?
-            () :
-            controls[headNum + 1].animY |> SpringAnimation.setFinalValue(y);
-        setOnChange(~isX=true, afterChangeX);
-        setOnChange(~isX=false, afterChangeY);
-      };
-      Belt.Array.forEachWithIndex(controls, (i, _) => setupAnimation(i));
-      let onMove = e => {
-        let x = e##pageX;
-        let y = e##pageY;
-        controls[0].animX |> SpringAnimation.setFinalValue(x);
-        controls[0].animY |> SpringAnimation.setFinalValue(y);
-      };
-      addEventListener("mousemove", onMove);
-      addEventListener("touchmove", onMove);
+        Belt.Array.forEachWithIndex(controls, (i, _) => setupAnimation(i));
+        let onMove = e => {
+          let x = e##pageX;
+          let y = e##pageY;
+          controls[0].animX |> SpringAnimation.setFinalValue(x);
+          controls[0].animY |> SpringAnimation.setFinalValue(y);
+        };
+        addEventListener("mousemove", onMove);
+        addEventListener("touchmove", onMove);
 
-      Some(
-        () =>
-          Belt.Array.forEach(
-            controls,
-            ({animX, animY}) => {
-              SpringAnimation.stop(animX);
-              SpringAnimation.stop(animY);
-            },
-          ),
-      );
-    });
+        Some(
+          () =>
+            Belt.Array.forEach(
+              controls,
+              ({animX, animY}) => {
+                SpringAnimation.stop(animX);
+                SpringAnimation.stop(animY);
+              },
+            ),
+        );
+      });
 
-    <div> {ReasonReact.array(chatHeads)} </div>;
+    return(<div> {ReasonReact.array(chatHeads)} </div>);
   };
 };
+
+let chatHeads = () =>
+  ChatHeadsExample.make(ChatHeadsExample.makeProps(~imageGallery=false, ()))
+  |> Hooks.extract;
+
+let imageGalleryChatHeads = () =>
+  ChatHeadsExample.make(ChatHeadsExample.makeProps(~imageGallery=true, ()))
+  |> Hooks.extract;
 
 module ChatHeadsExampleStarter = {
   type state =
@@ -809,16 +818,9 @@ module ChatHeadsExampleStarter = {
             {ReasonReact.string("Start image gallery chatheads")}
           </button>
         </div>
-      | ChatHeads =>
-        React.createElement(
-          ChatHeadsExample.make,
-          ChatHeadsExample.makeProps(~imageGallery=false, ()),
-        )
-      | ImageGalleryHeads =>
-        React.createElement(
-          ChatHeadsExample.make,
-          ChatHeadsExample.makeProps(~imageGallery=true, ()),
-        )
+      | ChatHeads => React.createElement(chatHeads, ())
+
+      | ImageGalleryHeads => React.createElement(imageGalleryChatHeads, ())
       },
   };
 };

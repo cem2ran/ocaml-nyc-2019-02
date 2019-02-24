@@ -2,13 +2,11 @@
   "name": "reason-react-example",
   "bsc-flags": ["-bs-no-version-header", "-bs-super-errors"],
   "ppx-flags": [
-    "./ppx/reactjs_jsx_ppx_v3.exe"],
-  "namespace": true,
-  "bs-dependencies": [
-    "reason-react",
-    "bs-fetch",
-    "@glennsl/bs-json"
+    "./ppx/reactjs_jsx_ppx_v3.exe",
+    "let-anything/lib/bs/native/let_anything.native"
   ],
+  "namespace": true,
+  "bs-dependencies": ["reason-react", "bs-fetch", "@glennsl/bs-json"],
   "sources": [
     {
       "dir": "src",
